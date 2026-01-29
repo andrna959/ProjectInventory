@@ -1,803 +1,191 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <base target="_top">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+  <h3 class="fw-bold text-danger">Barang Keluar</h3>
+</div>
 
-  <style>
-    /* Base Styles */
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background-color: #f8f9fa;
-    }
-
-    /* Sidebar Toggle Button */
-    .sidebar-toggler {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 1031;
-      display: none;
-      padding: 8px 12px;
-    }
-
-    /* Off-canvas Sidebar Component */
-    .nav-sidebar.offcanvas {
-      background-color: #444BA0;
-      padding: 0;
-      border: none;
-      border-radius: 0 10px 10px 0;
-    }
-    
-    .nav-sidebar .offcanvas-header {
-      background-color: #3a3f87;
-      color: white;
-    }
-
-    /* Desktop View */
-    @media (min-width: 992px) {
-      .main-content {
-        margin-left: 260px;
-        padding: 20px;
-      }
-      .nav-sidebar {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        width: 220px;
-        height: calc(100vh - 40px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        border-radius: 10px;
-        transform: none !important;
-        visibility: visible !important;
-      }
-      .offcanvas-backdrop {
-        display: none !important;
-      }
-    }
-
-    /* Mobile View */
-    @media (max-width: 991.98px) {
-      body { 
-        padding: 0; 
-      }
-      .main-content {
-        margin-left: 0;
-        padding: 15px;
-        padding-top: 75px;
-      }
-      .sidebar-toggler {
-        display: block;
-      }
-    }
-
-    /* Styles Lainnya */
-    .header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      margin-bottom: 20px; 
-    }
-    
-    .search-filter { 
-      display: flex; 
-      gap: 10px; 
-      margin-bottom: 20px; 
-      flex-wrap: wrap; 
-      align-items: center; 
-    }
-    
-    .form-container { 
-      background-color: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-      margin-bottom: 20px; 
-    }
-    
-    #barangKeluarTable thead th { 
-      background-color: #444BA0; 
-      color: white; 
-      vertical-align: middle; 
-    }
-    
-    .sidebar-header { 
-      padding: 20px; 
-      text-align: center; 
-      border-bottom: 1px solid rgba(255,255,255,0.1); 
-    }
-    
-    .sidebar-logo { 
-      width: 80px; 
-      height: 80px; 
-      margin-bottom: 15px; 
-      background-color: white; 
-      border-radius: 50%; 
-      display: inline-flex; 
-      align-items: center; 
-      justify-content: center; 
-      color: #444BA0; 
-      font-size: 2rem; 
-    }
-    
-    .sidebar-logo img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      border-radius: 50%; 
-    }
-    
-    .nav-link { 
-      padding: 10px 20px; 
-      color: white; 
-      border-left: 4px solid transparent; 
-      text-decoration: none; 
-      display: flex; 
-      align-items: center; 
-      transition: all 0.3s ease; 
-    }
-    
-    .nav-link:hover, 
-    .nav-link.active { 
-      background-color: rgba(255,255,255,0.1); 
-      border-left: 4px solid white; 
-      color: white; 
-    }
-    
-    .nav-link i { 
-      margin-right: 10px; 
-    }
-    
-    .nav-container { 
-      flex-grow: 1; 
-      overflow-y: auto; 
-      padding-top: 10px; 
-    }
-    
-    .warning-text { 
-      color: #d32f2f; 
-      font-weight: 500; 
-    }
-    
-    @keyframes spin { 
-      0% { transform: rotate(0deg); } 
-      100% { transform: rotate(360deg); } 
-    }
-    
-    .spin { 
-      animation: spin 1s linear infinite; 
-    }
-
-    /* CSS KHUSUS SCANNER */
-    #scanner-container {
-      position: relative;
-      background: #000;
-      width: 100%;
-      min-height: 300px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    #reader {
-      width: 100%;
-    }
-    #reader__scan_region {
-      background: white; 
-    }
-  </style>
-</head>
-
-<body>
-  <button class="btn btn-primary sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-    <i class="material-icons">menu</i>
-  </button>
-
-  <aside class="nav-sidebar offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title">Menu Utama</h5>
-      <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<div class="card border-0 shadow-sm p-4 mb-4 fade-in" style="border-radius: 12px;">
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label text-muted">Tanggal</label>
+      <input type="date" id="bk_tgl" class="form-control">
     </div>
-    <div class="offcanvas-body p-0">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <img src="https://lh3.googleusercontent.com/d/1CiWVF8FtS0TBv4H3wVOuq0mIpRszym-V" alt="Logo Perusahaan">
-        </div>
-        <h5 style="color: white;">Inventory System</h5>
-        <h6 style="color: white;">E.A Project</h6>
-      </div>
-      <div class="nav-container">
-        <nav class="nav flex-column">
-          <a class="nav-link" href="<?= scriptUrl ?>">
-            <i class="material-icons">dashboard</i> Dashboard
-          </a>
-          <a class="nav-link" href="<?= scriptUrl ?>?page=produk">
-            <i class="material-icons">inventory</i> Produk
-          </a>
-          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-masuk">
-            <i class="material-icons">input</i> Barang Masuk
-          </a>
-          <a class="nav-link active" href="<?= scriptUrl ?>?page=barang-keluar">
-            <i class="material-icons">output</i> Barang Keluar
-          </a>
-          <a class="nav-link" href="<?= scriptUrl ?>?page=stok-opname">
-            <i class="material-icons">checklist</i> Stok Opname
-          </a>
-          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-opname">
-            <i class="material-icons">assessment</i> Laporan Opname
-          </a>
-          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-barang">
-            <i class="material-icons">plagiarism</i> Kartu Stok
-          </a>
-        </nav>
+    <div class="col-md-5">
+      <label class="form-label text-muted">Kode Barang</label>
+      <div class="input-group">
+        <input type="text" id="bk_kode" class="form-control" placeholder="Scan atau Ketik...">
+        <button class="btn btn-outline-danger" onclick="bk_startScan()"><i class="material-icons">qr_code_scanner</i></button>
       </div>
     </div>
-  </aside>
-    
-  <main class="main-content">
-    <div class="header">
-      <h3>
-        <i class="material-icons" style="vertical-align: middle;">output</i> Barang Keluar
-      </h3>
+    <div class="col-md-4 d-grid">
+      <button class="btn btn-secondary text-white" onclick="bk_cekBarang()" style="margin-top: 30px;">
+        <i class="material-icons" style="font-size:16px; vertical-align:text-bottom;">search</i> Cek Barang
+      </button>
     </div>
-    
-    <div class="form-container">
-      <h5 class="form-title" style="color: #d32f2f;">
-        <i class="material-icons">remove_circle</i> Form Barang Keluar
-      </h5>
-      <div class="row g-3">
-        <div class="col-12 col-md-4 col-lg-3">
-          <label for="tglKeluar" class="form-label">Tanggal Keluar</label>
-          <input type="date" class="form-control" id="tglKeluar" required>
-        </div>
-        
-        <div class="col-12 col-md-8 col-lg-5">
-          <label for="kodeBarang" class="form-label">Kode Barang</label>
-          <div class="input-group">
-            <input type="text" class="form-control" id="kodeBarang" placeholder="Scan atau ketik kode" required>
-            <button class="btn btn-outline-secondary" type="button" onclick="startScan()" title="Scan Barcode/QR">
-              <i class="material-icons">qr_code_scanner</i> Scan
-            </button>
-          </div>
-        </div>
-        
-        <div class="col-12 col-lg-4 d-grid">
-          <button class="btn btn-info mt-auto" onclick="getProdukInfo()">
-            <i class="material-icons">search</i> Cek Barang
-          </button>
-        </div>
-      </div>
-      
-      <div class="row g-3 mt-2" id="produkInfo" style="display: none;">
-        <div class="col-12 col-lg-4">
-          <label class="form-label">Nama Barang</label>
-          <input type="text" class="form-control" id="namaBarang" readonly>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <label class="form-label">Jenis Barang</label>
-          <input type="text" class="form-control" id="jenisBarang" readonly>
-        </div>
-        <div class="col-6 col-md-3 col-lg-2">
-          <label class="form-label">Satuan</label>
-          <input type="text" class="form-control" id="satuan" readonly>
-        </div>
-        <div class="col-6 col-md-3 col-lg-3">
-          <label class="form-label">Stok Saat Ini</label>
-          <input type="text" class="form-control" id="stokSaatIni" readonly>
-        </div>
-        <small class="warning-text" id="stokWarning" style="display: none;">
-          <i class="material-icons" style="font-size:14px; vertical-align:middle">warning</i> Stok tidak mencukupi!
-        </small>
-      </div>
-      
-      <div class="row g-3 mt-3">
-        <div class="col-12 col-md-6 col-lg-3">
-          <label for="jumlah" class="form-label">Jumlah Keluar</label>
-          <input type="number" class="form-control" id="jumlah" min="1" required oninput="cekStok()">
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <label for="gudang" class="form-label">Gudang Asal</label>
-          <select class="form-select" id="gudang" required>
-            <option value="">Pilih Gudang</option>
-          </select>
-        </div>
-        <div class="col-12 col-lg-6">
-          <label for="penanggungJawab" class="form-label">Penanggung Jawab</label>
-          <input type="text" class="form-control" id="penanggungJawab" placeholder="Nama penanggung jawab" required>
-        </div>
-        <div class="col-12 d-flex align-items-end gap-2 mt-3">
-          <button class="btn btn-danger" onclick="simpanBarangKeluar()" id="btnSimpan">
-            <i class="material-icons">save</i> Simpan
-          </button>
-          <button class="btn btn-secondary" onclick="resetForm()" id="btnReset">
-            <i class="material-icons">refresh</i> Reset
-          </button>
-        </div>
-      </div>
+  </div>
+
+  <div id="bk_info" class="row mt-3 p-3 bg-light rounded border mx-1" style="display:none;">
+    <div class="col-md-4"><strong>Nama:</strong> <span id="bk_nama" class="text-danger">-</span></div>
+    <div class="col-md-4"><strong>Sisa Stok:</strong> <span id="bk_stok" class="badge bg-warning text-dark">-</span></div>
+    <div class="col-md-4"><strong>Satuan:</strong> <span id="bk_satuan">-</span></div>
+  </div>
+
+  <div class="row g-3 mt-2">
+    <div class="col-md-3">
+      <label class="form-label text-muted">Jumlah Keluar</label>
+      <input type="number" id="bk_jml" class="form-control" min="1">
     </div>
-    
-    <div class="search-filter">
-      <div class="input-group" style="flex: 1; min-width: 250px;">
-        <input type="text" id="searchInput" class="form-control" placeholder="Cari kode atau nama barang...">
-        <button class="btn btn-outline-secondary" onclick="searchBarangKeluar()">
-          <i class="material-icons">search</i>
-        </button>
-      </div>
-      <select id="filterGudang" class="form-select" style="width: auto; min-width: 180px;" onchange="filterBarangKeluar()">
-        <option value="">Semua Gudang</option>
+    <div class="col-md-3">
+      <label class="form-label text-muted">Gudang Asal</label>
+      <select id="bk_gudang" class="form-select">
+        <option>Gudang 1</option><option>Gudang 2</option><option>Gudang 3</option>
       </select>
-      <button class="btn btn-success" onclick="exportToExcel()" id="btnExport">
-        <i class="material-icons">file_download</i> Export
+    </div>
+    <div class="col-md-3">
+      <label class="form-label text-muted">Penanggung Jawab</label>
+      <input type="text" id="bk_pj" class="form-control" placeholder="Nama Staff">
+    </div>
+    <div class="col-md-3 d-grid align-items-end">
+      <button class="btn btn-danger w-100 fw-bold" onclick="bk_simpan()">
+        <i class="material-icons" style="font-size:18px; vertical-align:bottom;">outbox</i> KELUARKAN
       </button>
     </div>
-    
-    <div class="table-responsive bg-white p-3 rounded-3">
-      <table id="barangKeluarTable" class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Kode Barang</th>
-            <th>Nama Barang</th>
-            <th>Jenis</th>
-            <th>Satuan</th>
-            <th>Gudang</th>
-            <th>Penanggung Jawab</th>
-            <th>Jumlah</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="barangKeluarTableBody">
-          <tr>
-            <td colspan="9" class="text-center py-4">
-              <div class="spinner-border text-primary"></div>
-              <p class="mt-2 mb-0">Memuat data...</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  </div>
+</div>
 
-    <div id="paginationControls" class="d-flex justify-content-between align-items-center mt-3" style="display: none;">
-      <button id="prevButton" class="btn btn-outline-secondary" onclick="changePage('prev')">
-        <i class="material-icons">chevron_left</i>
-      </button>
-      <span id="pageInfo" class="text-muted"></span>
-      <button id="nextButton" class="btn btn-outline-secondary" onclick="changePage('next')">
-        <i class="material-icons">chevron_right</i>
-      </button>
-    </div>
-    
-    <div class="modal fade" id="scanModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title"><i class="material-icons" style="vertical-align:middle">qr_code_scanner</i> Scanner Keluar</h5>
-            <button type="button" class="btn-close btn-close-white" onclick="stopScan()"></button>
-          </div>
-          <div class="modal-body p-0">
-            <div id="scanner-container">
-              <div id="reader"></div>
-            </div>
-          </div>
-          <div class="modal-footer justify-content-center">
-            <small class="text-muted">Arahkan kamera ke Barcode / QR Code</small>
-            <button type="button" class="btn btn-secondary" onclick="stopScan()">Tutup</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<div class="card border-0 shadow-sm p-4 fade-in" style="border-radius: 12px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Riwayat Keluar</h5>
+    <input type="text" id="bk_search" class="form-control form-control-sm w-auto" placeholder="Cari..." onkeyup="bk_loadData()">
+  </div>
   
-  <script>
-    let currentPage = 1;
-    let currentFilter = '';
-    let currentSearch = '';
-    let barisDiedit = null;
-    let html5QrcodeScanner = null;
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr><th>Tanggal</th><th>Kode</th><th>Nama</th><th>Jml</th><th>Gudang</th><th>PJ</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="bk_table"></tbody>
+    </table>
+  </div>
+  
+  <div class="d-flex justify-content-end gap-2 mt-3">
+    <button class="btn btn-sm btn-outline-secondary" onclick="bk_nav(-1)">Prev</button>
+    <span id="bk_page_info" class="align-self-center text-muted small">Page 1</span>
+    <button class="btn btn-sm btn-outline-secondary" onclick="bk_nav(1)">Next</button>
+  </div>
+</div>
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('tglKeluar').value = new Date().toISOString().split('T')[0];
-      loadGudangOptions();
-      loadBarangKeluarData(currentFilter, currentPage, currentSearch);
-      
-      document.getElementById('searchInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-          searchBarangKeluar();
-        }
-      });
-    });
+<div class="modal fade" id="bk_scanModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Scanner Keluar</h5>
+        <button type="button" class="btn-close btn-close-white" onclick="bk_stopScan()"></button>
+      </div>
+      <div class="modal-body p-0 bg-dark"><div id="bk_reader" style="width:100%"></div></div>
+    </div>
+  </div>
+</div>
 
-    /* --- LOGIC SCANNER BARU --- */
-    function startScan() {
-        const scanModal = new bootstrap.Modal(document.getElementById('scanModal'));
-        scanModal.show();
+<script>
+  var bk_page = 1;
+  var bk_scanner = null;
 
-        if (html5QrcodeScanner === null) {
-            html5QrcodeScanner = new Html5Qrcode("reader");
-        }
+  (function() {
+    document.getElementById('bk_tgl').valueAsDate = new Date();
+    bk_loadData();
+  })();
 
-        const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
-        
-        html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
-        .catch(err => {
-            console.error("Error starting scanner", err);
-            Swal.fire("Error", "Gagal mengakses kamera: " + err, "error");
-            stopScan();
-        });
-    }
-
-    function onScanSuccess(decodedText) {
-        playBeep();
-        stopScan();
-        document.getElementById('kodeBarang').value = decodedText;
-        
-        // Visual feedback
-        Swal.fire({
-            icon: 'success', title: 'Terbaca!', text: decodedText, 
-            timer: 1000, showConfirmButton: false
-        });
-        
-        // Cek produk & stok otomatis
-        getProdukInfo();
-    }
-
-    function stopScan() {
-        if (html5QrcodeScanner) {
-            html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(console.error);
-        }
-        const modalEl = document.getElementById('scanModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
-    }
-
-    function playBeep() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(1500, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.1);
-    }
-    /* --- END LOGIC SCANNER --- */
-
-    function loadBarangKeluarData(filter = '', page = 1, searchTerm = '') {
-      document.getElementById('barangKeluarTableBody').innerHTML = `<tr><td colspan="9" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>`;
-      document.getElementById('paginationControls').style.display = 'none';
-
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.error) { return handleLoadError(response.error); }
-          
-          const tableBody = document.getElementById('barangKeluarTableBody');
-          tableBody.innerHTML = '';
-          currentPage = response.currentPage;
-          currentFilter = filter;
-          currentSearch = searchTerm;
-
-          if (!response.data || response.data.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4">Tidak ada data barang keluar.</td></tr>`;
-          } else {
-            response.data.forEach(function(row) {
-              const rowIndex = row[8];
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>${formatDate(row[0]) || '-'}</td><td>${row[1] || '-'}</td><td>${row[2] || '-'}</td>
-                <td>${row[3] || '-'}</td><td>${row[4] || '-'}</td><td>${row[5] || '-'}</td>
-                <td>${row[6] || '-'}</td><td>${row[7] || '0'}</td>
-                <td>
-                  <button class="btn btn-sm btn-outline-primary mx-1" onclick="editBarangKeluar(${rowIndex})" title="Edit"><i class="material-icons" style="font-size:18px;">edit</i></button>
-                  <button class="btn btn-sm btn-outline-danger" onclick="hapusBarangKeluar(${rowIndex})" title="Hapus"><i class="material-icons" style="font-size:18px;">delete</i></button>
-                </td>`;
-              tableBody.appendChild(tr);
-            });
-          }
-          updatePaginationControls(response.currentPage, response.totalPages, response.totalData);
-        })
-        .withFailureHandler(handleLoadError)
-        .getDataBarangKeluar(filter, page, 10, searchTerm);
-    }
+  function bk_cekBarang() {
+    var kode = document.getElementById('bk_kode').value;
+    if(!kode) return Swal.fire('Info', 'Isi kode barang', 'info');
     
-    function searchBarangKeluar() {
-      const searchTerm = document.getElementById('searchInput').value.trim();
-      loadBarangKeluarData(currentFilter, 1, searchTerm);
-    }
-    
-    function filterBarangKeluar() {
-      currentFilter = document.getElementById('filterGudang').value;
-      loadBarangKeluarData(currentFilter, 1, currentSearch);
-    }
-    
-    function changePage(direction) {
-      const newPage = direction === 'next' ? currentPage + 1 : currentPage - 1;
-      loadBarangKeluarData(currentFilter, newPage, currentSearch);
-    }
-    
-    function handleLoadError(error) {
-        Swal.fire({ icon: 'error', title: 'Oops...', text: 'Gagal memuat data: ' + error.message });
-        document.getElementById('barangKeluarTableBody').innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">Gagal memuat data.</td></tr>`;
-    }
-    
-    function updatePaginationControls(page, totalPages, totalData) {
-      const paginationDiv = document.getElementById('paginationControls');
-      if (totalPages <= 1) {
-        paginationDiv.style.display = 'none';
-        return;
-      }
-      paginationDiv.style.display = 'flex';
-      const startItem = (page - 1) * 10 + 1;
-      const endItem = Math.min(page * 10, totalData);
-      document.getElementById('pageInfo').textContent = `Menampilkan ${startItem} - ${endItem} dari ${totalData} data`;
-      document.getElementById('prevButton').disabled = (page <= 1);
-      document.getElementById('nextButton').disabled = (page >= totalPages);
-    }
-    
-    function simpanBarangKeluar() {
-      const tglKeluar = document.getElementById('tglKeluar').value;
-      const kodeBarang = document.getElementById('kodeBarang').value.trim();
-      const jumlah = document.getElementById('jumlah').value;
-      const gudang = document.getElementById('gudang').value;
-      const penanggungJawab = document.getElementById('penanggungJawab').value.trim();
-
-      if (!tglKeluar || !kodeBarang || !jumlah || !gudang || !penanggungJawab) {
-        return Swal.fire('Input Tidak Lengkap', 'Harap lengkapi semua field!', 'warning');
-      }
-
-      const btnSimpan = document.getElementById('btnSimpan');
-      const originalText = btnSimpan.innerHTML;
-      btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan data...';
-      btnSimpan.disabled = true;
-
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success) {
-            Swal.fire('Berhasil!', response.message, 'success');
-            resetForm();
-            loadBarangKeluarData(currentFilter, 1, '');
-          } else {
-            Swal.fire('Gagal!', response.message, 'error');
-          }
-          btnSimpan.innerHTML = originalText;
-          btnSimpan.disabled = false;
-        })
-        .withFailureHandler(function(error) {
-          Swal.fire('Error', 'Terjadi kesalahan sistem: ' + error.message, 'error');
-          btnSimpan.innerHTML = originalText;
-          btnSimpan.disabled = false;
-        })
-        .addBarangKeluar(tglKeluar, kodeBarang, jumlah, gudang, penanggungJawab);
-    }
-    
-    function hapusBarangKeluar(rowIndex) {
-      Swal.fire({
-        title: 'Anda yakin?',
-        text: `Stok produk akan dikembalikan. Aksi ini tidak bisa dibatalkan.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-          google.script.run
-            .withSuccessHandler(function(response) {
-              Swal.fire('Terhapus!', response, 'success');
-              loadBarangKeluarData(currentFilter, currentPage, currentSearch);
-            })
-            .withFailureHandler(function(err) { Swal.fire('Gagal!', err.message, 'error'); })
-            .hapusBarangKeluar(rowIndex);
-        }
-      });
-    }
-
-    function exportToExcel() {
-      const btn = document.getElementById("btnExport");
-      const originalHtml = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengekspor data...';
-      btn.disabled = true;
-      google.script.run
-        .withSuccessHandler(function(response) {
-          const link = document.createElement("a");
-          link.href = response.url;
-          link.download = response.filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          btn.innerHTML = '<i class="material-icons">check_circle</i> Berhasil!';
-          setTimeout(function() { btn.innerHTML = originalHtml; btn.disabled = false; }, 2000);
-        })
-        .withFailureHandler(function(error) {
-          Swal.fire("Gagal Mengekspor", error.message, "error");
-          btn.innerHTML = originalHtml;
-          btn.disabled = false;
-        })
-        .exportToExcel("ProdukKeluar");
-    }
-
-    function formatDate(d) { return d ? new Date(d).toLocaleDateString('id-ID', {day:'2-digit',month:'2-digit',year:'numeric'}) : ''; }
-    
-    function loadGudangOptions() {
-      google.script.run.withSuccessHandler(function(gudangList) {
-        const filterGudang = document.getElementById('filterGudang');
-        filterGudang.innerHTML = '<option value="">Semua Gudang</option>';
-        const defaultGudang = ['Gudang 1', 'Gudang 2', 'Gudang 3'];
-        const gudangs = gudangList && gudangList.length ? gudangList : defaultGudang;
-        gudangs.forEach(function(gudang) {
-          const option = document.createElement('option');
-          option.value = gudang;
-          option.textContent = gudang;
-          filterGudang.appendChild(option);
-        });
-      }).getGudangList();
-    }
-
-    function loadGudangByProduk(kodeBarang) {
-        google.script.run
-            .withSuccessHandler(function(gudangList) {
-                const gudangSelect = document.getElementById('gudang');
-                gudangSelect.innerHTML = '<option value="">Pilih Gudang</option>';
-                if (gudangList && gudangList.length > 0) {
-                    gudangList.forEach(function(gudang) {
-                        const option = document.createElement('option');
-                        option.value = gudang;
-                        option.textContent = gudang;
-                        gudangSelect.appendChild(option);
-                    });
-                } else {
-                    Swal.fire('Info', 'Produk ini belum pernah tercatat masuk di gudang manapun.', 'info');
-                }
-            })
-            .getGudangByProduk(kodeBarang);
-    }
-
-    function getProdukInfo() {
-      const kodeBarang = document.getElementById('kodeBarang').value.trim();
-      if (!kodeBarang) {
-        return Swal.fire('Input Kosong', 'Masukkan kode barang terlebih dahulu', 'warning');
-      }
-
-      const btnCek = document.querySelector('button[onclick="getProdukInfo()"]');
-      const originalText = btnCek.innerHTML;
-      btnCek.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memeriksa data...';
-      btnCek.disabled = true;
-
-      google.script.run
-        .withSuccessHandler(function(produk) {
-          if (!produk) {
-            Swal.fire('Tidak Ditemukan', 'Kode barang tidak ditemukan di database.', 'error');
-            document.getElementById('produkInfo').style.display = 'none';
-          } else {
-            document.getElementById('namaBarang').value = produk.nama || '-';
-            document.getElementById('jenisBarang').value = produk.jenis || '-';
-            document.getElementById('satuan').value = produk.satuan || '-';
-            document.getElementById('stokSaatIni').value = produk.stok !== undefined ? produk.stok : '0';
-            document.getElementById('produkInfo').style.display = 'flex';
-            cekStok();
-            loadGudangByProduk(kodeBarang);
-          }
-          btnCek.innerHTML = originalText;
-          btnCek.disabled = false;
-        })
-        .withFailureHandler(function(err) {
-          Swal.fire('Gagal', 'Gagal memeriksa barang: ' + err.message, 'error');
-          btnCek.innerHTML = originalText;
-          btnCek.disabled = false;
-        })
-        .getProdukByBarcode(kodeBarang);
-    }
-
-    function cekStok() {
-      const jumlahKeluar = parseInt(document.getElementById('jumlah').value, 10);
-      const stokSaatIni = parseInt(document.getElementById('stokSaatIni').value, 10);
-      const stokWarning = document.getElementById('stokWarning');
-      const btnSimpan = document.getElementById('btnSimpan');
-
-      if (isNaN(jumlahKeluar) || jumlahKeluar <= 0) {
-        stokWarning.style.display = 'none';
-        btnSimpan.disabled = false;
-        return;
-      }
-      
-      if (jumlahKeluar > stokSaatIni) {
-        stokWarning.style.display = 'block';
-        btnSimpan.disabled = true;
+    google.script.run.withSuccessHandler(function(p) {
+      if(p) {
+        document.getElementById('bk_nama').innerText = p.nama;
+        document.getElementById('bk_stok').innerText = p.stok;
+        document.getElementById('bk_satuan').innerText = p.satuan;
+        document.getElementById('bk_info').style.display = 'flex';
       } else {
-        stokWarning.style.display = 'none';
-        btnSimpan.disabled = false;
+        Swal.fire('404', 'Barang tidak ditemukan', 'error');
+        document.getElementById('bk_info').style.display = 'none';
       }
-    }
+    }).getProdukByBarcode(kode);
+  }
 
-    function resetForm() {
-      document.getElementById('kodeBarang').value = '';
-      document.getElementById('jumlah').value = '';
-      document.getElementById('penanggungJawab').value = '';
-      document.getElementById('gudang').innerHTML = '<option value="">Pilih Gudang</option>';
-      
-      document.getElementById('produkInfo').style.display = 'none';
-      document.getElementById('stokWarning').style.display = 'none';
-      
-      const btnSimpan = document.getElementById('btnSimpan');
-      btnSimpan.innerHTML = '<i class="material-icons">save</i> Simpan';
-      btnSimpan.onclick = simpanBarangKeluar;
-      btnSimpan.disabled = false;
-      btnSimpan.classList.replace('btn-warning', 'btn-danger');
+  function bk_simpan() {
+    var d = {
+      tgl: document.getElementById('bk_tgl').value,
+      kode: document.getElementById('bk_kode').value,
+      jml: document.getElementById('bk_jml').value,
+      gudang: document.getElementById('bk_gudang').value,
+      pj: document.getElementById('bk_pj').value
+    };
 
-      const btnReset = document.getElementById('btnReset');
-      btnReset.innerHTML = '<i class="material-icons">refresh</i> Reset';
-      btnReset.onclick = resetForm;
-      
-      barisDiedit = null;
-    }
+    if(!d.kode || !d.jml || !d.pj) return Swal.fire('Warning', 'Lengkapi data!', 'warning');
 
-    function editBarangKeluar(rowIndex) {
-      const baris = document.querySelector(`button[onclick="editBarangKeluar(${rowIndex})"]`).closest('tr');
-      const sel = baris.getElementsByTagName('td');
-
-      const tanggalDariTabel = sel[0].textContent;
-      document.getElementById('tglKeluar').value = tanggalDariTabel.split('/').reverse().join('-');
-      document.getElementById('kodeBarang').value = sel[1].textContent;
-      document.getElementById('gudang').value = sel[5].textContent;
-      document.getElementById('penanggungJawab').value = sel[6].textContent;
-      document.getElementById('jumlah').value = sel[7].textContent;
-      
-      barisDiedit = rowIndex;
-      getProdukInfo();
-      document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
-
-      const btnSimpan = document.getElementById('btnSimpan');
-      btnSimpan.innerHTML = '<i class="material-icons">save</i> Update';
-      btnSimpan.onclick = prosesUpdateBarangKeluar;
-      btnSimpan.classList.replace('btn-danger', 'btn-warning');
-
-      const btnReset = document.getElementById('btnReset');
-      btnReset.innerHTML = '<i class="material-icons">cancel</i> Batal';
-      btnReset.onclick = resetForm;
-    }
-
-    function prosesUpdateBarangKeluar() {
-      if (!barisDiedit) return;
-
-      const newData = {
-        tglKeluar: document.getElementById('tglKeluar').value,
-        jumlah: document.getElementById('jumlah').value,
-        gudang: document.getElementById('gudang').value,
-        penanggungJawab: document.getElementById('penanggungJawab').value
-      };
-
-      if (!newData.tglKeluar || !newData.jumlah || !newData.gudang || !newData.penanggungJawab) {
-        return Swal.fire('Input Tidak Lengkap', 'Harap lengkapi semua field yang akan diupdate!', 'warning');
+    Swal.showLoading();
+    google.script.run.withSuccessHandler(function(res) {
+      Swal.close();
+      if(res.success) {
+        Swal.fire('Berhasil', res.message, 'success');
+        document.getElementById('bk_kode').value = '';
+        document.getElementById('bk_jml').value = '';
+        document.getElementById('bk_info').style.display = 'none';
+        bk_loadData();
+      } else {
+        Swal.fire('Gagal', res.message, 'error');
       }
-      
-      const btnUpdate = document.getElementById('btnSimpan');
-      const originalUpdateText = btnUpdate.innerHTML;
-      btnUpdate.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memperbarui data...';
-      btnUpdate.disabled = true;
+    }).addBarangKeluar(d.tgl, d.kode, d.jml, d.gudang, d.pj);
+  }
 
-      google.script.run
-        .withSuccessHandler(function(response) {
-          Swal.fire('Berhasil!', response, 'success');
-          resetForm(); 
-          loadBarangKeluarData(currentFilter, currentPage, currentSearch);
-        })
-        .withFailureHandler(function(error) {
-          Swal.fire('Gagal!', 'Gagal memperbarui data: ' + error.message, 'error');
-          btnUpdate.innerHTML = originalUpdateText;
-          btnUpdate.disabled = false;
-        })
-        .updateBarangKeluar(barisDiedit, newData);
-    }
-  </script>
-</body>
-</html>
+  function bk_loadData() {
+    var s = document.getElementById('bk_search').value;
+    google.script.run.withSuccessHandler(function(res) {
+      var html = '';
+      res.data.forEach(function(r) {
+        html += `<tr>
+          <td>${r[0]}</td><td><span class="badge bg-light text-dark border">${r[1]}</span></td>
+          <td>${r[2]}</td><td class="text-danger fw-bold">-${r[7]}</td>
+          <td>${r[5]}</td><td>${r[6]}</td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="bk_hapus(${r[8]})"><i class="material-icons" style="font-size:16px">delete</i></button></td>
+        </tr>`;
+      });
+      document.getElementById('bk_table').innerHTML = html || '<tr><td colspan="7" class="text-center">Kosong</td></tr>';
+      document.getElementById('bk_page_info').innerText = 'Page ' + res.currentPage;
+    }).getDataBarangKeluar('', bk_page, 10, s);
+  }
+
+  function bk_hapus(idx) {
+    Swal.fire({title:'Batalkan?', text:'Stok akan dikembalikan', icon:'warning', showCancelButton:true}).then((r) => {
+      if(r.isConfirmed) {
+        google.script.run.withSuccessHandler(res => { Swal.fire('Info', res, 'info'); bk_loadData(); }).hapusBarangKeluar(idx);
+      }
+    });
+  }
+
+  function bk_nav(d) {
+    if(d === -1 && bk_page > 1) { bk_page--; bk_loadData(); }
+    if(d === 1) { bk_page++; bk_loadData(); }
+  }
+
+  function bk_startScan() {
+    new bootstrap.Modal(document.getElementById('bk_scanModal')).show();
+    if(!bk_scanner) bk_scanner = new Html5Qrcode("bk_reader");
+    bk_scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
+      function(decoded) {
+        document.getElementById('bk_kode').value = decoded;
+        bk_stopScan();
+        bk_cekBarang();
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator(); osc.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.1);
+      }
+    );
+  }
+  
+  function bk_stopScan() {
+    if(bk_scanner) bk_scanner.stop().then(() => bk_scanner.clear());
+    var el = document.getElementById('bk_scanModal');
+    var modal = bootstrap.Modal.getInstance(el);
+    if(modal) modal.hide();
+  }
+</script>

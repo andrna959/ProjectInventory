@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+  /* Base Styles */
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+
+  /* Sidebar Toggle Button */
+  .sidebar-toggler {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1031;
+    display: none;
+    padding: 8px 12px;
+  }
+
+  /* Off-canvas Sidebar Component */
+  .nav-sidebar.offcanvas {
+    background-color: #444BA0;
+    padding: 0;
+    border: none;
+    border-radius: 0 10px 10px 0;
+  }
+  
+  .nav-sidebar .offcanvas-header {
+    background-color: #3a3f87;
+    color: white;
+  }
+
+  /* Desktop View */
+  @media (min-width: 992px) {
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .nav-sidebar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 220px;
+      height: calc(100vh - 40px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      transform: none !important;
+      visibility: visible !important;
+    }
+    .offcanvas-backdrop {
+      display: none !important;
+    }
+  }
+
+  /* Mobile View */
+  @media (max-width: 991.98px) {
+    body { 
+      padding: 0; 
+    }
+    .main-content {
+      margin-left: 0;
+      padding: 15px;
+      padding-top: 75px;
+    }
+    .sidebar-toggler {
+      display: block;
+    }
+  }
+
+  /* Additional Styles */
+  .header { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+  }
+  
+  .filter-container { 
+    background-color: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    margin-bottom: 20px; 
+  }
+  
+  .report-area { 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    min-height: 400px; 
+  }
+  
+  .report-area table thead th { 
+    background-color: #444BA0; 
+    color: white; 
+    vertical-align: middle; 
+  }
+  
+  .placeholder { 
+    text-align: center; 
+    color: #888; 
+    padding-top: 100px; 
+  }
+  
+  #reportActions { 
+    display: none; 
+  }
+  
+  .sidebar-header { 
+    padding: 20px; 
+    text-align: center; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+  }
+  
+  .sidebar-logo { 
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 15px; 
+    background-color: white; 
+    border-radius: 50%; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #444BA0; 
+    font-size: 2rem; 
+  }
+  
+  .sidebar-logo img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    border-radius: 50%; 
+  }
+  
+  .nav-link { 
+    padding: 10px 20px; 
+    color: white; 
+    border-left: 4px solid transparent; 
+    text-decoration: none; 
+    display: flex; 
+    align-items: center; 
+    transition: all 0.3s ease; 
+  }
+  
+  .nav-link:hover, 
+  .nav-link.active { 
+    background-color: rgba(255,255,255,0.1); 
+    border-left: 4px solid white; 
+    color: white; 
+  }
+  
+  .nav-link i { 
+    margin-right: 10px; 
+  }
+  
+  .nav-container { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding-top: 10px; 
+  }
+  
+  /* Print Styles */
+  @media print { 
+    body { 
+      padding: 0; 
+      margin: 20px; 
+    } 
+    .nav-sidebar, 
+    .filter-container, 
+    .main-content > h3, 
+    #reportActions { 
+      display: none !important; 
+    } 
+    .main-content { 
+      margin-left: 0; 
+    } 
+    .report-area { 
+      box-shadow: none; 
+      border: none; 
+      padding: 0; 
+    } 
+  }
+</style>
+
+<body>
+  <!-- Sidebar Toggle Button -->
+  <button class="btn btn-primary sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+    <i class="material-icons">menu</i>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <aside class="nav-sidebar offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu Utama</h5>
+      <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="https://lh3.googleusercontent.com/d/1CiWVF8FtS0TBv4H3wVOuq0mIpRszym-V" alt="Logo Perusahaan">
+        </div>
+        <h5 style="color: white;">Inventory System</h5>
+        <h6 style="color: white;">E.A Project</h6>
+      </div>
+      <div class="nav-container">
+        <nav class="nav flex-column">
+          <a class="nav-link" href="<?= scriptUrl ?>">
+            <i class="material-icons">dashboard</i> Dashboard
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=produk">
+            <i class="material-icons">inventory</i> Produk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-masuk">
+            <i class="material-icons">input</i> Barang Masuk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-keluar">
+            <i class="material-icons">output</i> Barang Keluar
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=stok-opname">
+            <i class="material-icons">checklist</i> Stok Opname
+          </a>
+          <a class="nav-link active" href="<?= scriptUrl ?>?page=laporan-opname">
+            <i class="material-icons">assessment</i> Laporan Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-barang">
+            <i class="material-icons">plagiarism</i> Kartu Stok
+          </a>
+        </nav>
+      </div>
+    </div>
+  </aside>
+    
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="header">
+      <i class="material-icons fs-2">assessment</i>
+      <h3 class="mb-0">Laporan Stok Opname</h3>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-container">
+      <h5>Filter Laporan</h5>
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="tanggalMulai" class="form-label">Tanggal Mulai</label>
+          <input type="date" class="form-control" id="tanggalMulai">
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="tanggalSelesai" class="form-label">Tanggal Selesai</label>
+          <input type="date" class="form-control" id="tanggalSelesai">
+        </div>
+        <div class="col-12 col-lg-4 d-grid">
+          <button class="btn btn-primary" onclick="tampilkanLaporan()">
+            <i class="material-icons">visibility</i> Tampilkan Laporan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Actions -->
+    <div id="reportActions" class="d-flex justify-content-end mb-3 gap-2">
+      <button class="btn btn-secondary" onclick="window.print()">
+        <i class="material-icons">print</i> Cetak
+      </button>
+      <button class="btn btn-success" onclick="exportLaporan()">
+        <i class="material-icons">file_download</i> Export ke Excel
+      </button>
+    </div>
+
+    <!-- Report Content Area -->
+    <div id="reportArea" class="report-area">
+      <div id="placeholder" class="placeholder">
+        <i class="material-icons" style="font-size: 4rem; color: #ccc;">inbox</i>
+        <p class="mt-2">Silakan pilih rentang tanggal dan klik "Tampilkan Laporan".</p>
+      </div>
+      <div id="laporanContainer"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // GANTI SEMUA JAVASCRIPT LAMA DENGAN KODE BARU INI
+    let reportDataCache = []; 
+
+    // Fungsi helper untuk format tanggal yang lebih baik
+    function formatTanggal(dateString) {
+      if (!dateString) return "-";
+      try {
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        // Menambahkan 'T00:00:00' untuk memastikan parsing tanggal konsisten di semua browser
+        // dan menghindari masalah timezone saat menampilkan.
+        return new Date(dateString + 'T00:00:00').toLocaleDateString('id-ID', options);
+      } catch (e) {
+        console.error("Gagal memformat tanggal:", dateString, e);
+        return dateString; // Kembalikan apa adanya jika terjadi error
+      }
+    }
+
+    function tampilkanLaporan() {
+      const tanggalMulai = document.getElementById('tanggalMulai').value;
+      const tanggalSelesai = document.getElementById('tanggalSelesai').value;
+
+      if (!tanggalMulai || !tanggalSelesai) {
+        Swal.fire('Input Tidak Lengkap', 'Harap isi Tanggal Mulai dan Tanggal Selesai.', 'warning');
+        return;
+      }
+
+      if (new Date(tanggalMulai) > new Date(tanggalSelesai)) {
+        Swal.fire('Input Tidak Valid', 'Tanggal Mulai harus lebih awal atau sama dengan Tanggal Selesai.', 'warning');
+        return;
+      }
+
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('laporanContainer').innerHTML = `<div class="text-center p-5"><div class="spinner-border text-primary"></div><p class="mt-2">Memproses laporan...</p></div>`;
+      document.getElementById('reportActions').style.display = 'none';
+
+      google.script.run
+        .withSuccessHandler(function(data) {
+          reportDataCache = data;
+          const container = document.getElementById('laporanContainer');
+          container.innerHTML = '';
+
+          if (!data || data.length === 0) {
+            container.innerHTML = `<div class="alert alert-info text-center">Tidak ditemukan data stok opname untuk periode yang dipilih.</div>`;
+            return;
+          }
+
+          let tableHTML = `
+            <h4 class="text-center mb-1">Laporan Stok Opname</h4>
+            <p class="text-center text-muted mt-0 mb-4">Periode: ${formatTanggal(tanggalMulai)} - ${formatTanggal(tanggalSelesai)}</p>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Sistem</th>
+                    <th>Fisik</th>
+                    <th>Selisih</th>
+                    <th>Penyesuaian</th>
+                    <th>Petugas</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+
+          data.forEach(row => {
+            // Mengambil data dari indeks yang benar sesuai urutan kolom sheet
+            const tanggalOpname = row[1];         // Kolom B
+            const kodeBarang = row[2];          // Kolom C
+            const namaBarang = row[3];          // Kolom D
+            const stokSistem = row[4];          // Kolom E
+            const stokFisik = row[5];           // Kolom F
+            const selisih = row[6];             // Kolom G
+            const statusPenyesuaian = row[7];   // Kolom H
+            const petugas = row[8];             // Kolom I
+            
+            const selisihClass = selisih < 0 ? 'text-danger' : (selisih > 0 ? 'text-success' : '');
+            
+            tableHTML += `
+              <tr>
+                <td>${formatTanggal(tanggalOpname)}</td>
+                <td>${kodeBarang}</td>
+                <td>${namaBarang}</td>
+                <td>${stokSistem}</td>
+                <td>${stokFisik}</td>
+                <td class="fw-bold ${selisihClass}">${selisih > 0 ? '+' : ''}${selisih}</td>
+                <td><span class="badge ${statusPenyesuaian === 'Stok Disesuaikan' ? 'bg-warning text-dark' : 'bg-secondary'}">${statusPenyesuaian}</span></td>
+                <td>${petugas}</td>
+              </tr>
+            `;
+          });
+
+          tableHTML += '</tbody></table></div>';
+          container.innerHTML = tableHTML;
+          document.getElementById('reportActions').style.display = 'flex';
+        })
+        .withFailureHandler(function(error) {
+          Swal.fire('Gagal', 'Terjadi kesalahan saat memuat laporan: ' + error.message, 'error');
+          document.getElementById('placeholder').style.display = 'block';
+          document.getElementById('laporanContainer').innerHTML = '';
+        })
+        .getLaporanOpname(tanggalMulai, tanggalSelesai);
+    }
+    
+    function exportLaporan() {
+        if(reportDataCache.length === 0) {
+            Swal.fire('Tidak Ada Data', 'Tidak ada data untuk diexport.', 'warning');
+            return;
+        }
+        const btn = document.querySelector('button[onclick="exportLaporan()"]');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengekspor...';
+        btn.disabled = true;
+        google.script.run
+            .withSuccessHandler(function(response){
+                const link = document.createElement("a");
+                link.href = response.url;
+                link.download = response.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            })
+            .withFailureHandler(function(err){
+                Swal.fire('Gagal Export', err.message, 'error');
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            })
+            .exportLaporanToExcel(reportDataCache, "Laporan_Stok_Opname");
+    }
+  </script>
+</body>
+</html>

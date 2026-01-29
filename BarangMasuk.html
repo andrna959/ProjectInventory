@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+  /* Base Styles */
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+
+  /* Tombol untuk membuka sidebar di HP */
+  .sidebar-toggler {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1031;
+    display: none;
+    padding: 8px 12px;
+  }
+
+  /* Mengubah .nav-sidebar menjadi komponen Off-canvas Bootstrap */
+  .nav-sidebar.offcanvas {
+    background-color: #444BA0;
+    padding: 0;
+    border: none;
+    border-radius: 0 10px 10px 0;
+  }
+  
+  .nav-sidebar .offcanvas-header {
+    background-color: #3a3f87;
+    color: white;
+  }
+
+  /* Tampilan di layar besar (Desktop) */
+  @media (min-width: 992px) {
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .nav-sidebar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 220px;
+      height: calc(100vh - 40px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      transform: none !important;
+      visibility: visible !important;
+    }
+    .offcanvas-backdrop {
+      display: none !important;
+    }
+  }
+
+  /* Tampilan di layar kecil (Mobile) */
+  @media (max-width: 991.98px) {
+    body { 
+      padding: 0; 
+    }
+    .main-content {
+      margin-left: 0;
+      padding: 15px;
+      padding-top: 75px; /* Jarak dari atas untuk header dan tombol */
+    }
+    .sidebar-toggler {
+      display: block;
+    }
+  }
+
+  /* Gaya lainnya */
+  .header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+  }
+  
+  .search-filter { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    flex-wrap: wrap; 
+    align-items: center; 
+  }
+  
+  .form-container { 
+    background-color: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    margin-bottom: 20px; 
+  }
+  
+  #barangMasukTable thead th { 
+    background-color: #444BA0; 
+    color: white; 
+    vertical-align: middle; 
+  }
+  
+  .sidebar-header { 
+    padding: 20px; 
+    text-align: center; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+  }
+  
+  .sidebar-logo { 
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 15px; 
+    background-color: white; 
+    border-radius: 50%; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #444BA0; 
+    font-size: 2rem; 
+  }
+  
+  .sidebar-logo img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    border-radius: 50%; 
+  }
+  
+  .nav-link { 
+    padding: 10px 20px; 
+    color: white; 
+    border-left: 4px solid transparent; 
+    text-decoration: none; 
+    display: flex; 
+    align-items: center; 
+    transition: all 0.3s ease; 
+  }
+  
+  .nav-link:hover, 
+  .nav-link.active { 
+    background-color: rgba(255,255,255,0.1); 
+    border-left: 4px solid white; 
+    color: white; 
+  }
+  
+  .nav-link i { 
+    margin-right: 10px; 
+  }
+  
+  .nav-container { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding-top: 10px; 
+  }
+  
+  .scan-btn { 
+    position: relative; 
+    overflow: hidden; 
+  }
+  
+  .scan-input { 
+    position: absolute; 
+    font-size: 100px; 
+    opacity: 0; 
+    right: 0; 
+    top: 0; 
+    cursor: pointer; 
+  }
+  
+  @keyframes spin { 
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); } 
+  }
+  
+  .spin { 
+    animation: spin 1s linear infinite; 
+  }
+</style>
+
+<body>
+  <button class="btn btn-primary sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+    <i class="material-icons">menu</i>
+  </button>
+
+  <aside class="nav-sidebar offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu Utama</h5>
+      <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="https://lh3.googleusercontent.com/d/1CiWVF8FtS0TBv4H3wVOuq0mIpRszym-V" alt="Logo Perusahaan">
+        </div>
+        <h5 style="color: white;">Inventory System</h5>
+        <h6 style="color: white;">E.A Project</h6>
+      </div>
+      <div class="nav-container">
+        <nav class="nav flex-column">
+          <a class="nav-link" href="<?= scriptUrl ?>">
+            <i class="material-icons">dashboard</i> Dashboard
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=produk">
+            <i class="material-icons">inventory</i> Produk
+          </a>
+          <a class="nav-link active" href="<?= scriptUrl ?>?page=barang-masuk">
+            <i class="material-icons">input</i> Barang Masuk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-keluar">
+            <i class="material-icons">output</i> Barang Keluar
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=stok-opname">
+            <i class="material-icons">checklist</i> Stok Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-opname">
+            <i class="material-icons">assessment</i> Laporan Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-barang">
+            <i class="material-icons">plagiarism</i> Kartu Stok
+          </a>
+        </nav>
+      </div>
+    </div>
+  </aside>
+    
+  <main class="main-content">
+    <div class="header">
+      <h3>
+        <i class="material-icons" style="vertical-align: middle;">input</i> Barang Masuk
+      </h3>
+    </div>
+    
+    <div class="form-container">
+      <h5 class="form-title" style="color: #444BA0;">
+        <i class="material-icons">add_circle</i> Form Barang Masuk
+      </h5>
+      <div class="row g-3">
+        <div class="col-12 col-md-4 col-lg-3">
+          <label for="tglMasuk" class="form-label">Tanggal Masuk</label>
+          <input type="date" class="form-control" id="tglMasuk" required>
+        </div>
+        <div class="col-12 col-md-8 col-lg-5">
+          <label for="kodeBarang" class="form-label">Kode Barang</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="kodeBarang" placeholder="Input barcode" required>
+            <button class="btn btn-outline-secondary scan-btn" type="button" title="Scan Barcode">
+              <i class="material-icons">qr_code_scanner</i>
+              <input type="file" accept="image/*" capture="environment" class="scan-input" id="barcodeInput">
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4 d-grid">
+          <button class="btn btn-info mt-auto" onclick="getProdukInfo()">
+            <i class="material-icons">search</i> Cek Barang
+          </button>
+        </div>
+      </div>
+      
+      <div class="row g-3 mt-2" id="produkInfo" style="display: none;">
+        <div class="col-12 col-lg-4">
+          <label class="form-label">Nama Barang</label>
+          <input type="text" class="form-control" id="namaBarang" readonly>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label">Jenis Barang</label>
+          <input type="text" class="form-control" id="jenisBarang" readonly>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <label class="form-label">Satuan</label>
+          <input type="text" class="form-control" id="satuan" readonly>
+        </div>
+        <div class="col-6 col-md-3 col-lg-3">
+          <label class="form-label">Stok Saat Ini</label>
+          <input type="text" class="form-control" id="stokSaatIni" readonly>
+        </div>
+      </div>
+      
+      <div class="row g-3 mt-3">
+        <div class="col-12 col-md-4 col-lg-3">
+          <label for="jumlah" class="form-label">Jumlah Masuk</label>
+          <input type="number" class="form-control" id="jumlah" min="1" required>
+        </div>
+        <div class="col-12 col-md-4 col-lg-4">
+          <label for="gudang" class="form-label">Gudang Tujuan</label>
+          <select class="form-select" id="gudang" required>
+            <option value="">Pilih Gudang</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 col-lg-5 d-flex align-items-end gap-2">
+          <button class="btn btn-primary" onclick="simpanBarangMasuk()" id="btnSimpan">
+            <i class="material-icons">save</i> Simpan
+          </button>
+          <button class="btn btn-secondary" onclick="resetForm()" id="btnReset">
+            <i class="material-icons">refresh</i> Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-filter">
+      <div class="input-group" style="flex: 1; min-width: 250px;">
+        <input type="text" id="searchInput" class="form-control" placeholder="Cari kode atau nama barang...">
+        <button class="btn btn-outline-secondary" onclick="searchBarangMasuk()">
+          <i class="material-icons">search</i>
+        </button>
+      </div>
+      <select id="filterGudang" class="form-select" style="width: auto; min-width: 180px;" onchange="filterBarangMasuk()">
+        <option value="">Semua Gudang</option>
+      </select>
+      <button class="btn btn-success" onclick="exportToExcel()" id="btnExport">
+        <i class="material-icons">file_download</i> Export
+      </button>
+    </div>
+    
+    <div class="table-responsive bg-white p-3 rounded-3">
+      <table id="barangMasukTable" class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Kode Barang</th>
+            <th>Nama Barang</th>
+            <th>Jenis</th>
+            <th>Satuan</th>
+            <th>Jumlah</th>
+            <th>Gudang</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="barangMasukTableBody">
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <div class="spinner-border text-primary"></div>
+              <p class="mt-2 mb-0">Memuat data...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="paginationControls" class="d-flex justify-content-between align-items-center mt-3" style="display: none;">
+      <button id="prevButton" class="btn btn-outline-secondary" onclick="changePage('prev')">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <span id="pageInfo" class="text-muted"></span>
+      <button id="nextButton" class="btn btn-outline-secondary" onclick="changePage('next')">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+      let currentPage = 1;
+      let currentFilter = '';
+      let currentSearch = '';
+      let barisDiedit = null;
+
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('tglMasuk').value = new Date().toISOString().split('T')[0];
+        loadGudangOptions();
+        loadBarangMasukData(currentFilter, currentPage, currentSearch);
+        setupBarcodeScanner();
+        
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            searchBarangMasuk();
+          }
+        });
+      });
+      
+      function loadGudangOptions() {
+        google.script.run.withSuccessHandler(function(gudangList) {
+          const gudangSelect = document.getElementById('gudang');
+          const filterGudang = document.getElementById('filterGudang');
+          const defaultGudang = ['Gudang 1', 'Gudang 2', 'Gudang 3'];
+          const gudangs = gudangList && gudangList.length ? gudangList : defaultGudang;
+          gudangs.forEach(function(gudang) {
+            const option = document.createElement('option');
+            option.value = gudang;
+            option.textContent = gudang;
+            gudangSelect.appendChild(option.cloneNode(true));
+            filterGudang.appendChild(option);
+          });
+        }).getGudangList();
+      }
+      
+      function loadBarangMasukData(filter = '', page = 1, searchTerm = '') {
+        document.getElementById('barangMasukTableBody').innerHTML = `<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>`;
+        document.getElementById('paginationControls').style.display = 'none';
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.error) { return handleLoadError(response.error); }
+            
+            const tableBody = document.getElementById('barangMasukTableBody');
+            tableBody.innerHTML = '';
+            currentPage = response.currentPage;
+            currentFilter = filter;
+            currentSearch = searchTerm;
+
+            if (!response.data || response.data.length === 0) {
+              tableBody.innerHTML = `<tr><td colspan="8" class="empty-table">Tidak ada data yang cocok</td></tr>`;
+            } else {
+              response.data.forEach(function(row) {
+                const rowIndex = row[7];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>${formatDate(row[0]) || '-'}</td><td>${row[1] || '-'}</td><td>${row[2] || '-'}</td>
+                  <td>${row[3] || '-'}</td><td>${row[4] || '-'}</td><td>${row[5] || '0'}</td>
+                  <td>${row[6] || '-'}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary mx-1" onclick="editBarangMasuk(${rowIndex})" title="Edit"><i class="material-icons" style="font-size:18px;">edit</i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="hapusBarangMasuk(${rowIndex})" title="Hapus"><i class="material-icons" style="font-size:18px;">delete</i></button>
+                  </td>`;
+                tableBody.appendChild(tr);
+              });
+            }
+            updatePaginationControls(response.currentPage, response.totalPages, response.totalData);
+          })
+          .withFailureHandler(handleLoadError)
+          .getDataBarangMasuk(filter, page, 10, searchTerm);
+      }
+      
+      function handleLoadError(error) {
+          Swal.fire({ icon: 'error', title: 'Oops...', text: 'Gagal memuat data: ' + error.message });
+          document.getElementById('barangMasukTableBody').innerHTML = `<tr><td colspan="8" class="empty-table text-danger">Gagal memuat data.</td></tr>`;
+      }
+      
+      function updatePaginationControls(page, totalPages, totalData) {
+        const paginationDiv = document.getElementById('paginationControls');
+        if (totalPages <= 1) {
+          paginationDiv.style.display = 'none';
+          return;
+        }
+        paginationDiv.style.display = 'flex';
+        const startItem = (page - 1) * 10 + 1;
+        const endItem = Math.min(page * 10, totalData);
+        document.getElementById('pageInfo').textContent = `Menampilkan ${startItem} - ${endItem} dari ${totalData} data`;
+        document.getElementById('prevButton').disabled = (page <= 1);
+        document.getElementById('nextButton').disabled = (page >= totalPages);
+      }
+      
+      function changePage(direction) {
+        const newPage = direction === 'next' ? currentPage + 1 : currentPage - 1;
+        loadBarangMasukData(currentFilter, newPage, currentSearch);
+      }
+
+      function filterBarangMasuk() {
+        currentFilter = document.getElementById('filterGudang').value;
+        loadBarangMasukData(currentFilter, 1, currentSearch);
+      }
+
+      function searchBarangMasuk() {
+        const searchTerm = document.getElementById('searchInput').value.trim();
+        loadBarangMasukData(currentFilter, 1, searchTerm);
+      }
+      
+      function getProdukInfo() {
+        const kodeBarang = document.getElementById('kodeBarang').value.trim();
+        if (!kodeBarang) {
+          return Swal.fire('Input Kosong', 'Masukkan kode barang terlebih dahulu', 'warning');
+        }
+
+        const btnCek = document.querySelector('button[onclick="getProdukInfo()"]');
+        const originalText = btnCek.innerHTML;
+        btnCek.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memeriksa data...';
+        btnCek.disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function(produk) {
+            if (!produk) {
+              Swal.fire('Tidak Ditemukan', 'Kode barang tidak ditemukan di database.', 'error');
+              document.getElementById('produkInfo').style.display = 'none';
+            } else {
+              document.getElementById('namaBarang').value = produk.nama || '-';
+              document.getElementById('jenisBarang').value = produk.jenis || '-';
+              document.getElementById('satuan').value = produk.satuan || '-';
+              document.getElementById('stokSaatIni').value = produk.stok !== undefined ? produk.stok : '0';
+              document.getElementById('produkInfo').style.display = 'flex';
+            }
+            btnCek.innerHTML = originalText;
+            btnCek.disabled = false;
+          })
+          .withFailureHandler(function(err) { 
+              Swal.fire('Gagal', 'Gagal memeriksa barang: ' + err.message, 'error'); 
+              btnCek.innerHTML = originalText;
+              btnCek.disabled = false;
+          })
+          .getProdukByBarcode(kodeBarang);
+      }
+
+      function simpanBarangMasuk() {
+        const tglMasuk = document.getElementById('tglMasuk').value;
+        const kodeBarang = document.getElementById('kodeBarang').value;
+        const jumlah = document.getElementById('jumlah').value;
+        const gudang = document.getElementById('gudang').value;
+        
+        if (!tglMasuk || !kodeBarang || !jumlah || !gudang) {
+          return Swal.fire('Input Tidak Lengkap', 'Harap lengkapi semua field!', 'warning');
+        }
+        
+        const btnSimpan = document.getElementById('btnSimpan');
+        const originalText = btnSimpan.innerHTML;
+        btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan data...';
+        btnSimpan.disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (response.success) {
+              Swal.fire('Berhasil!', response.message, 'success');
+              resetForm();
+              loadBarangMasukData(currentFilter, 1, ''); // Kembali ke halaman 1 tanpa filter & pencarian
+            } else {
+              Swal.fire('Gagal!', response.message, 'error');
+            }
+            btnSimpan.innerHTML = originalText;
+            btnSimpan.disabled = false;
+          })
+          .withFailureHandler(function(err) { 
+              Swal.fire('Error', 'Terjadi kesalahan sistem: ' + err.message, 'error');
+              btnSimpan.innerHTML = originalText;
+              btnSimpan.disabled = false;
+          })
+          .addBarangMasuk(tglMasuk, kodeBarang, jumlah, gudang);
+      }
+      
+      function hapusBarangMasuk(rowIndex) {
+        Swal.fire({
+          title: 'Anda yakin?',
+          text: `Stok produk terkait akan dikurangi. Aksi ini tidak bisa dibatalkan.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            google.script.run
+              .withSuccessHandler(function(response) {
+                Swal.fire('Terhapus!', response, 'success');
+                // Muat ulang halaman saat ini untuk menjaga konsistensi data
+                loadBarangMasukData(currentFilter, currentPage, currentSearch);
+              })
+              .withFailureHandler(function(err) { Swal.fire('Gagal!', err.message, 'error'); })
+              .hapusBarangMasuk(rowIndex);
+          }
+        });
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+      
+      function resetButtonsToSimpanMode() {
+            const btnSimpan = document.getElementById('btnSimpan');
+            btnSimpan.innerHTML = '<i class="material-icons">save</i> Simpan';
+            btnSimpan.onclick = simpanBarangMasuk;
+            btnSimpan.disabled = false; // Pastikan tombol selalu aktif
+            btnSimpan.classList.replace('btn-warning', 'btn-primary');
+            
+            const btnReset = document.getElementById('btnReset');
+            btnReset.innerHTML = '<i class="material-icons">refresh</i> Reset';
+            btnReset.onclick = resetForm; // Arahkan kembali ke fungsi resetForm
+            
+            barisDiedit = null;
+          }
+
+          // FUNGSI resetForm yang disederhanakan
+          function resetForm() {
+            // Hanya fokus untuk mengosongkan input
+            document.getElementById('kodeBarang').value = '';
+            document.getElementById('jumlah').value = '';
+            document.getElementById('gudang').value = '';
+            document.getElementById('produkInfo').style.display = 'none';
+            
+            // Panggil fungsi yang mengatur ulang tombol
+            resetButtonsToSimpanMode();
+          }
+
+      function editBarangMasuk(rowIndex) {
+        const baris = document.querySelector(`button[onclick="editBarangMasuk(${rowIndex})"]`).closest('tr');
+        const sel = baris.getElementsByTagName('td');
+
+        const tanggalDariTabel = sel[0].textContent;
+        const tanggalUntukInput = tanggalDariTabel.split('/').reverse().join('-');
+        document.getElementById('tglMasuk').value = tanggalUntukInput;
+        document.getElementById('kodeBarang').value = sel[1].textContent;
+        document.getElementById('jumlah').value = sel[5].textContent;
+        document.getElementById('gudang').value = sel[6].textContent;
+        
+        barisDiedit = rowIndex;
+        
+        getProdukInfo();
+        document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+
+        const btnSimpan = document.getElementById('btnSimpan');
+        btnSimpan.innerHTML = '<i class="material-icons">save</i> Update';
+        btnSimpan.onclick = prosesUpdateBarangMasuk;
+        btnSimpan.classList.replace('btn-primary', 'btn-warning');
+
+        const btnReset = document.getElementById('btnReset');
+        btnReset.innerHTML = '<i class="material-icons">cancel</i> Batal';
+        btnReset.onclick = resetForm;
+      }
+
+      function prosesUpdateBarangMasuk() {
+        if (!barisDiedit) return;
+
+        const newData = {
+          tglMasuk: document.getElementById('tglMasuk').value,
+          jumlah: document.getElementById('jumlah').value,
+          gudang: document.getElementById('gudang').value
+        };
+
+        if (!newData.tglMasuk || !newData.jumlah || !newData.gudang) {
+          return Swal.fire('Input Tidak Lengkap', 'Harap lengkapi semua field yang akan diupdate!', 'warning');
+        }
+        
+        const btnUpdate = document.getElementById('btnSimpan');
+        const originalUpdateText = btnUpdate.innerHTML;
+        btnUpdate.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memperbarui data...';
+        btnUpdate.disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            Swal.fire('Berhasil!', response, 'success');
+            resetForm();
+            loadBarangMasukData(currentFilter, currentPage, currentSearch);
+          })
+          .withFailureHandler(function(error) {
+            Swal.fire('Gagal!', 'Gagal memperbarui data: ' + error.message, 'error');
+            btnUpdate.innerHTML = originalUpdateText;
+            btnUpdate.disabled = false;
+          })
+          .updateBarangMasuk(barisDiedit, newData);
+      }
+      
+      // GANTI fungsi setupBarcodeScanner yang lama dengan yang ini
+      function setupBarcodeScanner() {
+        const barcodeInput = document.getElementById('barcodeInput');
+        if (!barcodeInput) return; // Hentikan jika elemen tidak ditemukan
+
+        barcodeInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          
+          const kodeBarangInput = document.getElementById('kodeBarang');
+          
+          // Tampilkan status loading di kolom input
+          kodeBarangInput.value = "Membaca barcode...";
+          kodeBarangInput.disabled = true;
+          
+          Quagga.decodeSingle({
+            decoder: {
+              // Jenis barcode yang bisa dibaca, bisa disesuaikan
+              readers: ['ean_reader', 'code_128_reader', 'upc_reader'] 
+            },
+            locate: true, // improve accuracy 
+            src: URL.createObjectURL(file) // Buat URL sementara dari file gambar
+          }, function(result) {
+            kodeBarangInput.disabled = false;
+            
+            if (result?.codeResult) {
+              // Jika barcode berhasil dibaca
+              kodeBarangInput.value = result.codeResult.code;
+              // Langsung panggil info produk
+              getProdukInfo();
+            } else {
+              // Jika barcode tidak terdeteksi di gambar
+              kodeBarangInput.value = "";
+              Swal.fire("Gagal", "Barcode tidak terdeteksi. Pastikan gambar jelas dan tidak buram.", "error");
+            }
+            
+            // Reset input file agar bisa scan gambar yang sama lagi jika perlu
+            barcodeInput.value = '';
+          });
+        });
+      }
+      
+
+      function exportToExcel() {
+        const btn = document.getElementById("btnExport");
+        const originalHtml = btn.innerHTML;
+        const originalClasses = btn.className;
+        
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengekspor data...';
+        btn.disabled = true;
+        
+        google.script.run
+          .withSuccessHandler(function(response) {
+            // Buat link download sementara
+            const link = document.createElement("a");
+            link.href = response.url;
+            link.download = response.filename;
+            document.body.appendChild(link);
+            
+            // Klik link secara otomatis untuk memulai download
+            link.click();
+            
+            // Hapus link setelah selesai
+            document.body.removeChild(link);
+            
+            // Beri feedback sukses pada tombol
+            btn.innerHTML = '<i class="material-icons">check_circle</i> Berhasil!';
+            btn.className = "btn btn-info"; // Ganti warna tombol sementara
+            
+            // Kembalikan tombol ke kondisi semula setelah 2 detik
+            setTimeout(function() {
+              btn.innerHTML = originalHtml;
+              btn.className = originalClasses;
+              btn.disabled = false;
+            }, 2000);
+          })
+          .withFailureHandler(function(error) {
+            Swal.fire("Gagal Mengekspor", error.message, "error");
+            // Kembalikan tombol jika gagal
+            btn.innerHTML = originalHtml;
+            btn.className = originalClasses;
+            btn.disabled = false;
+          })
+          // Panggil fungsi backend dengan nama sheet yang benar
+          .exportToExcel("ProdukMasuk");
+      }
+
+    </script>
+</body>
+</html>

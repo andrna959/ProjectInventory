@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Base Styles */
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+
+  /* Sidebar Toggle Button (Hidden on Desktop) */
+  .sidebar-toggler {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1031;
+    display: none;
+    padding: 8px 12px;
+  }
+
+  /* Off-canvas Sidebar Component */
+  .nav-sidebar.offcanvas {
+    background-color: #444BA0;
+    padding: 0;
+    border: none;
+    border-radius: 0 10px 10px 0;
+  }
+  
+  .nav-sidebar .offcanvas-header {
+    background-color: #3a3f87;
+    color: white;
+  }
+
+  /* Desktop View */
+  @media (min-width: 992px) {
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .nav-sidebar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 220px;
+      height: calc(100vh - 40px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      transform: none !important;
+      visibility: visible !important;
+    }
+    .offcanvas-backdrop {
+      display: none !important;
+    }
+  }
+
+  /* Mobile View */
+  @media (max-width: 991.98px) {
+    body { 
+      padding: 0; 
+    }
+    .main-content {
+      margin-left: 0;
+      padding: 15px;
+    }
+    .sidebar-toggler {
+      display: block;
+    }
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+      margin-top: 60px;
+    }
+  }
+
+  /* Additional Styles */
+  .card { 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    margin-bottom: 20px; 
+    border: none; 
+    height: 100%; 
+  }
+  
+  .card-header { 
+    background-color: #444BA0; 
+    color: white; 
+    border-radius: 10px 10px 0 0 !important; 
+    font-weight: 500; 
+  }
+  
+  .sidebar-header { 
+    padding: 20px; 
+    text-align: center; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+  }
+  
+  .sidebar-logo { 
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 15px; 
+    background-color: white; 
+    border-radius: 50%; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #444BA0; 
+    font-size: 2rem; 
+  }
+  
+  .sidebar-logo img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    border-radius: 50%; 
+  }
+  
+  .nav-link { 
+    padding: 10px 20px; 
+    color: white; 
+    border-left: 4px solid transparent; 
+    text-decoration: none; 
+    display: flex; 
+    align-items: center; 
+    transition: all 0.3s ease; 
+  }
+  
+  .nav-link:hover, 
+  .nav-link.active { 
+    background-color: rgba(255,255,255,0.1); 
+    border-left: 4px solid white; 
+    color: white; 
+  }
+  
+  .nav-link i { 
+    margin-right: 10px; 
+  }
+  
+  .nav-container { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding-top: 10px; 
+  }
+  
+  .chart-container { 
+    position: relative; 
+    width: 100%; 
+    height: 350px; 
+  }
+  
+  #transaksiChart, 
+  #gudangChart { 
+    width: 100% !important; 
+    height: 100% !important; 
+  }
+  
+  .dashboard-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  
+  .user-greeting { 
+    display: flex; 
+    align-items: center; 
+    background-color: #444BA0; 
+    padding: 8px 15px; 
+    border-radius: 20px; 
+    font-size: 0.9rem; 
+    color: white; 
+  }
+  
+  .user-greeting .material-icons { 
+    margin: 0 5px; 
+    font-size: 1.2rem; 
+  }
+  
+  .stat-card .material-icons { 
+    font-size: 2.5rem; 
+    margin-bottom: 10px; 
+    opacity: 0.9; 
+  }
+  
+  .stat-card .stat-number { 
+    font-size: 2.5rem; 
+    font-weight: bold; 
+    margin: 5px 0; 
+  }
+  
+  .stat-card .stat-label { 
+    font-size: 1rem; 
+    opacity: 0.9; 
+  }
+  
+  .stat-card.text-white * { 
+    color: white !important; 
+  }
+  
+  .bg-purple { 
+    background-color: #444BA0 !important; 
+    border-color: #444BA0 !important; 
+  }
+  
+  .bg-green { 
+    background-color: #7AA3F9 !important; 
+    border-color: #7AA3F9 !important; 
+  }
+  
+  .bg-orange { 
+    background-color: #F2767F !important; 
+    border-color: #F2767F !important; 
+  }
+
+  /* Chart Toggle Buttons */
+  .chart-toggle .btn {
+    background-color: white !important;
+    color: #444BA0 !important;
+    border: 1px solid #444BA0 !important;
+    margin: 0;
+    border-radius: 0 !important;
+    transition: all 0.2s ease;
+  }
+  
+  .chart-toggle .btn:first-child { 
+    border-top-left-radius: 4px !important; 
+    border-bottom-left-radius: 4px !important; 
+  }
+  
+  .chart-toggle .btn:last-child { 
+    border-top-right-radius: 4px !important; 
+    border-bottom-right-radius: 4px !important; 
+  }
+  
+  .chart-toggle .btn.active { 
+    background-color: #444BA0 !important; 
+    color: white !important; 
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); 
+  }
+  
+  .chart-toggle .btn:not(.active):hover { 
+    background-color: #e3f2fd !important; 
+  }
+  
+  .chart-toggle .btn:active { 
+    transform: scale(0.98); 
+  }
+</style>
+
+<body>
+  <!-- Sidebar Toggle Button -->
+  <button class="btn btn-primary sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+    <i class="material-icons">menu</i>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <aside class="nav-sidebar offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu Utama</h5>
+      <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="https://lh3.googleusercontent.com/d/1CiWVF8FtS0TBv4H3wVOuq0mIpRszym-V" alt="Logo Perusahaan">
+        </div>
+        <h5 style="color: white;">Inventory System</h5>
+        <h6 style="color: white;">E.A Project</h6>
+      </div>
+      <div class="nav-container">
+        <nav class="nav flex-column">
+          <a class="nav-link active" href="<?= scriptUrl ?>">
+            <i class="material-icons">dashboard</i> Dashboard
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=produk">
+            <i class="material-icons">inventory</i> Produk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-masuk">
+            <i class="material-icons">input</i> Barang Masuk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-keluar">
+            <i class="material-icons">output</i> Barang Keluar
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=stok-opname">
+            <i class="material-icons">checklist</i> Stok Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-opname">
+            <i class="material-icons">assessment</i> Laporan Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-barang">
+            <i class="material-icons">plagiarism</i> Kartu Stok
+          </a>
+        </nav>
+      </div>
+    </div>
+  </aside>
+    
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4">
+      <h3>
+        <i class="material-icons" style="vertical-align: middle;">dashboard</i> Dashboard
+      </h3>
+      <div id="userInfo" class="user-greeting">
+        <span id="greetingText"></span>
+        <i class="material-icons">account_circle</i>
+        <span id="userEmail" class="ms-1"></span>
+      </div>
+    </div>
+      
+    <!-- Stats Cards -->
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card stat-card bg-purple text-white">
+          <div class="card-body text-center d-flex flex-column justify-content-center">
+            <i class="material-icons">inventory</i>
+            <div class="stat-number" id="totalProduk">0</div>
+            <div class="stat-label">Total Produk</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card stat-card bg-green text-white">
+          <div class="card-body text-center d-flex flex-column justify-content-center">
+            <i class="material-icons">input</i>
+            <div class="stat-number" id="totalMasuk">0</div>
+            <div class="stat-label">Total Transaksi Masuk</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card stat-card bg-orange text-white">
+          <div class="card-body text-center d-flex flex-column justify-content-center">
+            <i class="material-icons">output</i>
+            <div class="stat-number" id="totalKeluar">0</div>
+            <div class="stat-label">Total Transaksi Keluar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+    <!-- Charts Section -->
+    <div class="row mt-2">
+      <div class="col-12 col-xl-8 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Grafik Transaksi</span>
+            <div class="btn-group btn-group-sm chart-toggle" role="group">
+              <button type="button" class="btn btn-outline-secondary active" data-view="monthly" onclick="changeChartView('monthly')">
+                Bulanan
+              </button>
+              <button type="button" class="btn btn-outline-secondary" data-view="daily" onclick="changeChartView('daily')">
+                Harian
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="transaksiChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-12 col-xl-4 mb-4">
+        <div class="card">
+          <div class="card-header">Jumlah Stok per Gudang</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="gudangChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+    <!-- Recent Transactions Table -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">10 Transaksi Terakhir</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Tipe</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Jumlah</th>
+                    <th>Gudang</th>
+                  </tr>
+                </thead>
+                <tbody id="lastTransactions">
+                  <tr>
+                    <td colspan="6" class="text-center py-3">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Variabel global
+    let currentChartView = 'monthly';
+    let lastDashboardData = null;
+    let transaksiChartInstance = null;
+    let gudangChartInstance = null;
+    
+    // Fungsi utama yang dipanggil saat halaman dimuat
+    function initDashboard() {
+      loadDashboardData();
+    }
+    
+    // Fungsi untuk memuat data dashboard dari Google Apps Script
+    function loadDashboardData() {
+      showLoading(true);
+      const loadingCell = document.querySelector('#lastTransactions td');
+      if (loadingCell) loadingCell.innerHTML = 'Memuat data...';
+
+      google.script.run
+        .withSuccessHandler(handleDashboardResponse)
+        .withFailureHandler(handleDashboardError)
+        .getDashboardData(); // Memanggil fungsi di sisi server (Code.gs)
+    }
+    
+    // Fungsi untuk menangani response sukses dari server
+    function handleDashboardResponse(response) {
+      showLoading(false);
+      if (!response || !response.success) {
+        handleDashboardError(new Error(response?.error || "Terjadi kesalahan pada server"));
+        return;
+      }
+      
+      lastDashboardData = response.data; // Simpan data untuk render ulang
+      updateStats(response.data);
+      renderCharts(response.data);
+      updateLastTransactions(response.data.lastTransactions || []);
+      if(response.data.greeting && response.data.userEmail) {
+        document.getElementById('greetingText').textContent = response.data.greeting + ",";
+        document.getElementById('userEmail').textContent = response.data.userEmail;
+        document.getElementById('userInfo').style.display = 'flex'; // Tampilkan elemennya
+      }
+    }
+    
+    // Fungsi untuk menangani error saat pengambilan data
+    function handleDashboardError(error) {
+      showLoading(false);
+      console.error("Error loading dashboard data:", error);
+      const loadingCell = document.querySelector('#lastTransactions td');
+      if (loadingCell) loadingCell.innerHTML = `<span class="text-danger">Gagal memuat data.</span>`;
+      Swal.fire({
+          icon: 'error',
+          title: 'Gagal Memuat Data',
+          text: error.message || 'Silakan coba lagi nanti.',
+          confirmButtonColor: '#444BA0'
+      });
+    }
+    
+    function changeChartView(view) {
+      currentChartView = view;
+      
+      document.querySelectorAll('.chart-toggle .btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+      
+      if (lastDashboardData) {
+        renderCharts(lastDashboardData);
+      }
+    }
+    
+    // Fungsi untuk render semua chart
+    function renderCharts(data) {
+      if (currentChartView === 'monthly') {
+        createMonthlyChart(data.chartLabels, data.chartMasukData, data.chartKeluarData);
+      } else {
+        createDailyChart(data.dailyChartData?.labels, data.dailyChartData?.masuk, data.dailyChartData?.keluar);
+      }
+      createGudangChart(data.gudangLabels, data.gudangData);
+    }
+    
+    // Fungsi untuk membuat chart bulanan
+    function createMonthlyChart(labels, masukData, keluarData) {
+      if (transaksiChartInstance) transaksiChartInstance.destroy();
+      const ctx = document.getElementById('transaksiChart').getContext('2d');
+      transaksiChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels || [],
+          datasets: [
+            { label: 'Barang Masuk', data: masukData || [], borderColor: '#444BA0', tension: 0.2, fill: true, backgroundColor: 'rgba(68, 75, 160, 0.1)' },
+            { label: 'Barang Keluar', data: keluarData || [], borderColor: '#F2767F', tension: 0.2, fill: true, backgroundColor: 'rgba(242, 118, 127, 0.1)' }
+          ]
+        },
+        options: getChartOptions('Transaksi 6 Bulan Terakhir', 'Bulan')
+      });
+    }
+    
+    // Fungsi untuk membuat chart harian
+    function createDailyChart(labels, masukData, keluarData) {
+      if (transaksiChartInstance) transaksiChartInstance.destroy();
+      const ctx = document.getElementById('transaksiChart').getContext('2d');
+      transaksiChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels || [],
+          datasets: [
+            { label: 'Barang Masuk', data: masukData || [], backgroundColor: 'rgba(68, 75, 160, 0.7)'},
+            { label: 'Barang Keluar', data: keluarData || [], backgroundColor: 'rgba(242, 118, 127, 0.7)' }
+          ]
+        },
+        options: getChartOptions('Transaksi Harian Bulan Ini', 'Tanggal')
+      });
+    }
+    
+    // Fungsi untuk membuat chart gudang
+    function createGudangChart(labels, data) {
+      if (gudangChartInstance) gudangChartInstance.destroy();
+      const ctx = document.getElementById('gudangChart').getContext('2d');
+      gudangChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels || [],
+          datasets: [{ data: data || [], backgroundColor: ['#444BA0', '#7AA3F9', '#F2767F', '#f8c957', '#57d7f8'] }]
+        },
+        options: getDoughnutOptions()
+      });
+    }
+    
+    // Fungsi untuk mendapatkan opsi chart umum
+    function getChartOptions(title, xLabel) {
+      return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: title, font: { size: 16 } },
+          legend: { position: 'top' },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Jumlah Transaksi' } },
+          x: { grid: { display: false }, title: { display: true, text: xLabel } }
+        }
+      };
+    }
+
+    // Fungsi untuk mendapatkan opsi chart doughnut
+    function getDoughnutOptions() {
+      return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          title: { display: false },
+          legend: { position: 'bottom', labels: { boxWidth: 12 } }
+        },
+        cutout: '60%'
+      };
+    }
+    
+    // Fungsi untuk update kartu statistik
+    function updateStats(data) {
+      document.getElementById('totalProduk').textContent = data.totalProduk || 0;
+      document.getElementById('totalMasuk').textContent = data.totalMasuk || 0;
+      document.getElementById('totalKeluar').textContent = data.totalKeluar || 0;
+    }
+    
+    // Fungsi untuk update tabel transaksi terakhir
+    function updateLastTransactions(transactions) {
+      const tbody = document.getElementById('lastTransactions');
+      tbody.innerHTML = '';
+      
+      if (!transactions || transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-3">Tidak ada data transaksi</td></tr>';
+        return;
+      }
+      
+      transactions.forEach(trans => {
+        const row = document.createElement('tr');
+        
+        // Di sini kita hanya mencetak trans.tanggal tanpa memformatnya lagi
+        row.innerHTML = `
+          <td>${trans.tanggal}</td> 
+          <td><span class="badge ${trans.tipe === 'Masuk' ? 'bg-success' : 'bg-danger'}">${trans.tipe}</span></td>
+          <td>${trans.kodeBarang || ''}</td>
+          <td>${trans.namaBarang || ''}</td>
+          <td>${trans.jumlah || 0}</td>
+          <td>${trans.gudang || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Fungsi untuk format tanggal
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return dateString;
+      }
+    }
+
+    // Fungsi untuk menampilkan/menyembunyikan loading spinner (opsional, untuk UX yang lebih baik)
+    function showLoading(isLoading) {
+      // Anda bisa menambahkan logika untuk menampilkan spinner loading di sini jika diinginkan
+    }
+    
+    // Panggil fungsi inisialisasi saat halaman selesai dimuat
+    document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

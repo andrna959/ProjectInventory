@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Sidebar Toggle Button */
+    .sidebar-toggler {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1031;
+      display: none;
+      padding: 8px 12px;
+    }
+
+    /* Off-canvas Sidebar Component */
+    .nav-sidebar.offcanvas {
+      background-color: #444BA0;
+      padding: 0;
+      border: none;
+      border-radius: 0 10px 10px 0;
+    }
+    
+    .nav-sidebar .offcanvas-header {
+      background-color: #3a3f87;
+      color: white;
+    }
+
+    /* Desktop View */
+    @media (min-width: 992px) {
+      .main-content {
+        margin-left: 260px;
+        padding: 20px;
+      }
+      .nav-sidebar {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 220px;
+        height: calc(100vh - 40px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        transform: none !important;
+        visibility: visible !important;
+      }
+      .offcanvas-backdrop {
+        display: none !important;
+      }
+    }
+
+    /* Mobile View */
+    @media (max-width: 991.98px) {
+      body { 
+        padding: 0; 
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 15px;
+        padding-top: 75px;
+      }
+      .sidebar-toggler {
+        display: block;
+      }
+    }
+
+    /* Additional Styles */
+    .header { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+    }
+    
+    .search-filter-container { 
+      display: flex; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+      flex-wrap: wrap; 
+      align-items: center; 
+    }
+    
+    .form-container { 
+      background-color: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+      margin-bottom: 20px; 
+    }
+    
+    #opnameHistoryTable thead th { 
+      background-color: #444BA0; 
+      color: white; 
+      vertical-align: middle; 
+    }
+    
+    .sidebar-header { 
+      padding: 20px; 
+      text-align: center; 
+      border-bottom: 1px solid rgba(255,255,255,0.1); 
+    }
+    
+    .sidebar-logo { 
+      width: 80px; 
+      height: 80px; 
+      margin-bottom: 15px; 
+      background-color: white; 
+      border-radius: 50%; 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: #444BA0; 
+      font-size: 2rem; 
+    }
+    
+    .sidebar-logo img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      border-radius: 50%; 
+    }
+    
+    .nav-link { 
+      padding: 10px 20px; 
+      color: white; 
+      border-left: 4px solid transparent; 
+      text-decoration: none; 
+      display: flex; 
+      align-items: center; 
+      transition: all 0.3s ease; 
+    }
+    
+    .nav-link:hover, 
+    .nav-link.active { 
+      background-color: rgba(255,255,255,0.1); 
+      border-left: 4px solid white; 
+      color: white; 
+    }
+    
+    .nav-link i { 
+      margin-right: 10px; 
+    }
+    
+    .nav-container { 
+      flex-grow: 1; 
+      overflow-y: auto; 
+      padding-top: 10px; 
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+    
+    .spin { 
+      animation: spin 1s linear infinite; 
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar Toggle Button -->
+  <button class="btn btn-primary sidebar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+    <i class="material-icons">menu</i>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <aside class="nav-sidebar offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu Utama</h5>
+      <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="https://lh3.googleusercontent.com/d/1CiWVF8FtS0TBv4H3wVOuq0mIpRszym-V" alt="Logo Perusahaan">
+        </div>
+        <h5 style="color: white;">Inventory System</h5>
+        <h6 style="color: white;">E.A Project</h6>
+      </div>
+      <div class="nav-container">
+        <nav class="nav flex-column">
+          <a class="nav-link" href="<?= scriptUrl ?>">
+            <i class="material-icons">dashboard</i> Dashboard
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=produk">
+            <i class="material-icons">inventory</i> Produk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-masuk">
+            <i class="material-icons">input</i> Barang Masuk
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=barang-keluar">
+            <i class="material-icons">output</i> Barang Keluar
+          </a>
+          <a class="nav-link active" href="<?= scriptUrl ?>?page=stok-opname">
+            <i class="material-icons">checklist</i> Stok Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-opname">
+            <i class="material-icons">assessment</i> Laporan Opname
+          </a>
+          <a class="nav-link" href="<?= scriptUrl ?>?page=laporan-barang">
+            <i class="material-icons">plagiarism</i> Kartu Stok
+          </a>
+        </nav>
+      </div>
+    </div>
+  </aside>
+    
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Page Header -->
+    <div class="header">
+      <i class="material-icons fs-2">checklist</i>
+      <h3>Stok Opname</h3>
+    </div>
+    
+    <!-- Stock Check Form -->
+    <div class="form-container">
+      <h5 class="form-title" style="color: #444BA0;">
+        <i class="material-icons">edit_note</i> Form Pengecekan Stok
+      </h5>
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-6 col-lg-3">
+          <label for="tglOpname" class="form-label">Tanggal Opname</label>
+          <input type="date" class="form-control" id="tglOpname" required>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="kodeBarang" class="form-label">Kode Barang</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="kodeBarang" placeholder="Masukkan atau scan kode" required>
+            <button class="btn btn-outline-secondary" onclick="cekProduk()" id="btnCek">
+              <i class="material-icons">search</i>
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-5">
+          <label for="petugas" class="form-label">Nama Petugas</label>
+          <input type="text" class="form-control" id="petugas" required>
+        </div>
+      </div>
+      
+      <!-- Stock Check Details -->
+      <div id="opnameDetails" class="mt-4" style="display: none;">
+        <div class="p-3 border rounded">
+          <h6 id="namaBarang" class="fw-bold"></h6>
+          <hr>
+          <div class="row gy-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label">Stok di Sistem</label>
+              <input type="number" class="form-control" id="stokSistem" readonly>
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="stokFisik" class="form-label">Stok Fisik (Hasil Hitung)</label>
+              <input type="number" class="form-control" id="stokFisik" required oninput="hitungSelisih()">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Selisih</label>
+              <input type="text" class="form-control" id="selisih" readonly>
+            </div>
+            <div class="col-12">
+              <label for="catatan" class="form-label">Catatan (Opsional)</label>
+              <textarea class="form-control" id="catatan" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="lakukanPenyesuaian">
+            <label class="form-check-label fw-bold text-danger" for="lakukanPenyesuaian">
+              Ya, sesuaikan stok di sistem dengan hasil hitung fisik.
+            </label>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-secondary me-2" onclick="resetForm()">Batal</button>
+          <button class="btn btn-warning" onclick="simpanOpname()" id="btnSimpan">
+            <i class="material-icons">save</i> Simpan Hasil
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Opname History -->
+    <h4 class="mt-5">Riwayat Stok Opname</h4>
+    
+    <div class="search-filter-container">
+      <div class="input-group" style="flex: 1; min-width: 250px;">
+        <input type="text" id="searchInput" class="form-control" placeholder="Cari kode atau nama barang...">
+        <button class="btn btn-outline-secondary" onclick="searchOpname()">
+          <i class="material-icons">search</i>
+        </button>
+      </div>
+      <select id="filterPenyesuaian" class="form-select" style="width: auto; min-width: 220px;" onchange="filterOpname()">
+        <option value="">Semua Status Penyesuaian</option>
+        <option value="Stok Disesuaikan">Stok Disesuaikan</option>
+        <option value="Tidak Disesuaikan">Tidak Disesuaikan</option>
+      </select>
+      <button class="btn btn-success" onclick="exportToExcel()">
+        <i class="material-icons">file_download</i> Export
+      </button>
+    </div>
+
+    <div class="table-responsive bg-white p-3 rounded-3">
+      <table id="opnameHistoryTable" class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Kode Barang</th>
+            <th>Nama Barang</th>
+            <th>Sistem</th>
+            <th>Fisik</th>
+            <th>Selisih</th>
+            <th>Penyesuaian</th>
+            <th>Petugas</th>
+            <th>Catatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="opnameHistoryBody">
+          <tr>
+            <td colspan="10" class="text-center py-4">
+              <div class="spinner-border text-primary"></div>
+              <p class="mt-2 mb-0">Memuat data...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div id="paginationControls" class="d-flex justify-content-between align-items-center mt-3" style="display: none;">
+      <button id="prevButton" class="btn btn-outline-secondary" onclick="changePage('prev')">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <span id="pageInfo" class="text-muted"></span>
+      <button id="nextButton" class="btn btn-outline-secondary" onclick="changePage('next')">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script>
+    let currentPage = 1;
+    let currentSearch = '';
+    let currentOpnameFilter = '';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('tglOpname').valueAsDate = new Date();
+      loadRiwayatOpname(1);
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') searchOpname();
+      });
+    });
+
+function loadRiwayatOpname(page = 1, searchTerm = '', filter = '') {
+      document.getElementById('opnameHistoryBody').innerHTML = `<tr><td colspan="10" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>`;
+      google.script.run
+        .withSuccessHandler(function(response) {
+            const tableBody = document.getElementById('opnameHistoryBody');
+            tableBody.innerHTML = '';
+            if (!response || response.error) {
+                return handleLoadError(response ? response.error : 'Respon tidak valid dari server.');
+            }
+            currentPage = response.currentPage;
+            currentSearch = searchTerm;
+            currentOpnameFilter = filter;
+            if (response.data && response.data.length > 0) {
+                response.data.forEach(row => {
+                    const idOpname = row[0];
+                    const tanggalData = row[1];
+                    let tanggalTampil = "N/A";
+                    if (tanggalData) {
+                        tanggalTampil = new Date(tanggalData).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
+                    }
+                    const selisih = row[6];
+                    const selisihClass = selisih < 0 ? 'text-danger' : (selisih > 0 ? 'text-success' : '');
+                    const tr = document.createElement('tr');
+                    
+                    tr.innerHTML = `
+                        <td>${tanggalTampil}</td>
+                        <td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td>
+                        <td>${row[5]}</td><td class="fw-bold ${selisihClass}">${selisih > 0 ? '+' : ''}${selisih}</td>
+                        <td><span class="badge ${row[7] === 'Stok Disesuaikan' ? 'bg-warning text-dark' : 'bg-secondary'}">${row[7]}</span></td>
+                        <td>${row[8]}</td><td>${row[9] || ''}</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-danger" onclick="hapusRiwayat('${idOpname}')" title="Hapus Riwayat"><i class="material-icons" style="font-size:18px;">delete</i></button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="10" class="text-center py-3">Belum ada riwayat yang cocok.</td></tr>`;
+            }
+            updatePaginationControls(response.currentPage, response.totalPages, response.totalData);
+        })
+        .withFailureHandler(handleLoadError)
+        .getDataStokOpname(page, 10, searchTerm, filter);
+    }
+    
+    function updatePaginationControls(page, totalPages, totalData) {
+        // Baris debug: Anda bisa melihat ini di console browser (F12)
+        console.log(`Updating Pagination: Current Page = ${page}, Total Pages = ${totalPages}`);
+
+        const paginationDiv = document.getElementById("paginationControls");
+        const prevButton = document.getElementById("prevButton");
+        const nextButton = document.getElementById("nextButton");
+
+        if (!totalData || totalPages <= 1) {
+            paginationDiv.style.display = "none";
+            return;
+        }
+
+        paginationDiv.style.display = "flex";
+        
+        // Memastikan 'page' adalah angka untuk perbandingan yang aman
+        const pageNum = parseInt(page, 10);
+        const totalPagesNum = parseInt(totalPages, 10);
+
+        const startItem = (pageNum - 1) * 10 + 1;
+        const endItem = Math.min(10 * pageNum, totalData);
+        document.getElementById("pageInfo").textContent = `Menampilkan ${startItem} - ${endItem} dari ${totalData} riwayat`;
+        
+        // Logika final untuk menonaktifkan tombol
+        prevButton.disabled = (pageNum <= 1);
+        nextButton.disabled = (pageNum >= totalPagesNum);
+    }
+
+    function hapusRiwayat(idOpname) {
+      Swal.fire({
+        title: "Anda yakin?", text: "Anda tidak akan bisa mengembalikan riwayat opname ini!",
+        icon: "warning", showCancelButton: true, confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6", confirmButtonText: "Ya, hapus!", cancelButtonText: "Batal"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: "Menghapus...", didOpen: () => Swal.showLoading() });
+          google.script.run
+            .withSuccessHandler(function(response) {
+              Swal.fire('Terhapus!', response, 'success');
+              // Logika untuk memuat ulang halaman dengan benar
+              if(document.querySelectorAll('#opnameHistoryBody tr').length === 1 && currentPage > 1){
+                loadRiwayatOpname(currentPage - 1, currentSearch, currentOpnameFilter);
+              } else {
+                loadRiwayatOpname(currentPage, currentSearch, currentOpnameFilter);
+              }
+            })
+            .withFailureHandler(function(error) {
+              Swal.fire('Gagal!', error.message, 'error');
+            })
+            .hapusRiwayatOpname(idOpname);
+        }
+      });
+    }
+
+    function searchOpname() {
+        const searchTerm = document.getElementById('searchInput').value;
+        loadRiwayatOpname(1, searchTerm, currentOpnameFilter);
+    }
+
+    function filterOpname() {
+        const filter = document.getElementById('filterPenyesuaian').value;
+        loadRiwayatOpname(1, currentSearch, filter);
+    }
+
+    function changePage(direction) {
+      // Menambahkan pengecekan di sini agar tidak memanggil server jika tidak perlu
+      if (direction === 'prev' && currentPage <= 1) {
+        return; // Hentikan fungsi jika sudah di halaman pertama
+      }
+      
+      const newPage = (direction === 'next') ? currentPage + 1 : currentPage - 1;
+      loadRiwayatOpname(newPage, currentSearch, currentOpnameFilter);
+    }
+    
+    function exportToExcel() {
+      const btn = document.querySelector('button[onclick="exportToExcel()"]');
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengekspor data...';
+      btn.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+            const link = document.createElement("a");
+            link.href = response.url;
+            link.download = response.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            Swal.fire('Berhasil!', 'Data riwayat stok opname telah diexport.', 'success');
+            btn.innerHTML = originalHtml; btn.disabled = false;
+        })
+        .withFailureHandler(function(err) {
+            Swal.fire('Gagal Export', err.message, 'error');
+            btn.innerHTML = originalHtml; btn.disabled = false;
+        })
+        .exportToExcel("StokOpname");
+    }
+
+    function cekProduk() {
+        const kodeBarang = document.getElementById("kodeBarang").value.trim();
+        if (!kodeBarang) return Swal.fire("Input Kosong", "Masukkan Kode Barang.", "warning");
+        const btn = document.getElementById("btnCek");
+        const originalBtnHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memeriksa data...';
+        google.script.run
+            .withSuccessHandler(function(produk) {
+                if (produk) {
+                    document.getElementById("namaBarang").textContent = produk.nama;
+                    document.getElementById("stokSistem").value = produk.stokSistem;
+                    document.getElementById("opnameDetails").style.display = "block";
+                    hitungSelisih();
+                } else {
+                    Swal.fire("Tidak Ditemukan", "Produk dengan kode tersebut tidak ditemukan.", "error");
+                    resetForm();
+                }
+                btn.disabled = false; btn.innerHTML = originalBtnHTML;
+            })
+            .withFailureHandler(function(error) {
+                Swal.fire("Error", error.message, "error");
+                btn.disabled = false; btn.innerHTML = originalBtnHTML;
+            })
+            .getProdukUntukOpname(kodeBarang);
+    }
+
+    function hitungSelisih() {
+        const stokSistem = parseInt(document.getElementById("stokSistem").value) || 0;
+        const stokFisik = parseInt(document.getElementById("stokFisik").value) || 0;
+        const selisih = stokFisik - stokSistem;
+        const selisihInput = document.getElementById("selisih");
+        selisihInput.value = selisih > 0 ? "+" + selisih : selisih;
+        selisihInput.classList.remove("text-danger", "text-success");
+        if (selisih < 0) selisihInput.classList.add("text-danger");
+        if (selisih > 0) selisihInput.classList.add("text-success");
+    }
+
+    function simpanOpname() {
+        const opnameData = {
+            tanggal: document.getElementById("tglOpname").value,
+            kodeBarang: document.getElementById("kodeBarang").value,
+            namaBarang: document.getElementById("namaBarang").textContent,
+            stokSistem: document.getElementById("stokSistem").value,
+            stokFisik: document.getElementById("stokFisik").value,
+            petugas: document.getElementById("petugas").value,
+            catatan: document.getElementById("catatan").value,
+            lakukanPenyesuaian: document.getElementById("lakukanPenyesuaian").checked
+        };
+        if (!opnameData.kodeBarang || !opnameData.stokFisik || !opnameData.petugas) return Swal.fire("Input Kurang", "Pastikan Stok Fisik dan Nama Petugas sudah diisi.", "warning");
+        const btn = document.getElementById("btnSimpan");
+        const originalBtnHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+        google.script.run
+            .withSuccessHandler(function(response) {
+                if (response.success) {
+                    Swal.fire("Berhasil", response.message, "success");
+                    resetForm();
+                    loadRiwayatOpname(1);
+                } else { Swal.fire("Gagal", response.message, "error"); }
+                btn.disabled = false; btn.innerHTML = originalBtnHTML;
+            })
+            .withFailureHandler(function(error) {
+                Swal.fire("Error", error.message, "error");
+                btn.disabled = false; btn.innerHTML = originalBtnHTML;
+            })
+            .simpanHasilOpname(opnameData);
+    }
+
+    function resetForm() {
+        document.getElementById("kodeBarang").value = "";
+        document.getElementById("stokFisik").value = "";
+        document.getElementById("catatan").value = "";
+        document.getElementById("selisih").value = "";
+        document.getElementById("lakukanPenyesuaian").checked = false;
+        document.getElementById("opnameDetails").style.display = "none";
+        document.getElementById("kodeBarang").focus();
+    }
+
+    function handleLoadError(error) {
+        const errorMessage = typeof error === "object" ? error.message : error;
+        Swal.fire({ icon: "error", title: "Oops...", text: "Gagal memuat data: " + errorMessage });
+        document.getElementById("opnameHistoryBody").innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data.</td></tr>`;
+    }
+  </script>
+</body>
+</html>
